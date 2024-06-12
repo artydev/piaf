@@ -26,14 +26,12 @@ const styleMain = {
     lineHeight: '1.45rem',
 }
 
-function displayStoredMessage (messages : IChatMessage[]) {
+function displayStoredMessages (messages : IChatMessage[]) {
     return (
-        messages.map((m : IChatMessage) => (
-            <div>
-                <div style={{fontWeight : m.role == "user" ? "bold " : "normal"     }}>{m.content}</div>
-                <hr />
+        messages.map((m : IChatMessage, index: number ) => (
+            <div key={index} style={{fontWeight : m.role == "user" ? "bold " : "normal" }}>
+                {m.content}
             </div>
-          
         ))
     )
 }
@@ -49,7 +47,7 @@ function Chat() {
         <div className="main-content">
             <div style={styleContent as React.CSSProperties}>
                 <div style={styleMain} ref={responseRef}>
-                   {displayStoredMessage(getStoredMessages())}
+                   {displayStoredMessages(getStoredMessages())}
                 </div>
             </div>
             <Prompt getResponseRef={getResponseRef} />
