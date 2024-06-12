@@ -4,8 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/navbar/navbar";
 import Sidebar from "@/components/sidebar/sidebar";
 import Footer from "@/components/footer/footer";
-import Prompt from "@/components/prompt/prompt";
-
+import NoSsr from "@/components/NoSsr";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,19 +19,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <body className={inter.className}>
-        <div id="container">
-
-          <Navbar />
-          <div className="content">
-            <Sidebar />
-            <div className="main">
-              {children}
+        <NoSsr>
+          <div id="container">
+            <Navbar />
+            <div className="content">
+              <Sidebar />
+              <div className="main">
+                {children}
+              </div>
             </div>
+            <Footer />
           </div>
-          <Footer />
-        </div>
+        </NoSsr>
       </body>
     </html>
   );

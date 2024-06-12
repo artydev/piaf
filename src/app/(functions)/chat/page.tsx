@@ -24,7 +24,6 @@ const styleMain = {
 
 function DisplayStoredMessages({ messages }: { messages: IChatMessage[] }) {
     return (
-
         messages.map((m: IChatMessage, index: number) => (
             <div key={index} style={{ fontWeight: m.role == "user" ? "bold " : "normal" }}>
                 <div>{m.content}</div>
@@ -41,7 +40,7 @@ function Chat() {
     const responseRef = useRef(null);
 
     return (
-        <NoSsr>
+      
             <div className="main-content">
                 <div style={styleContent as React.CSSProperties}>
                     <div style={styleMain} ref={responseRef}>
@@ -50,7 +49,7 @@ function Chat() {
                 </div>
                 <Prompt getResponseRef={() => responseRef.current} />
             </div>
-        </NoSsr>
+      
     )
 }
 
