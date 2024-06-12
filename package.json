@@ -16,6 +16,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.2.1",
+    "sinuous": "^0.32.1",
     "zustand": "^4.5.2"
   },
   "devDependencies": {

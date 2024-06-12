@@ -1,6 +1,8 @@
 "use client"
 
 import Prompt from "@/components/prompt/prompt";
+import { IChatMessage, usePromptState } from "@/components/prompt/prompt_state";
+import { useStore } from "zustand";
 import { useRef } from "react";
 
 
@@ -24,14 +26,31 @@ const styleMain = {
     lineHeight: '1.45rem',
 }
 
+function displayStoredMessage (messages : IChatMessage[]) {
+    return (
+        messages.map((m : IChatMessage) => (
+            <div>
+                <div style={{fontWeight : m.role == "user" ? "bold " : "normal"     }}>{m.content}</div>
+                <hr />
+            </div>
+          
+        ))
+    )
+}
+
+function getStoredMessages () {
+    return usePromptState.getState().stored_messages;
+}
+
 function Chat() {
     const responseRef = useRef(null);
     const getResponseRef = () => responseRef.current;
     return (
         <div className="main-content">
             <div style={styleContent as React.CSSProperties}>
-                <h1 style = {{display : initPage ? "block" : "none"}} id='splash'>SPLASH</h1>
-                <div style={styleMain} ref={responseRef}></div>
+                <div style={styleMain} ref={responseRef}>
+                   {displayStoredMessage(getStoredMessages())}
+                </div>
             </div>
             <Prompt getResponseRef={getResponseRef} />
         </div>

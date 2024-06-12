@@ -3,166 +3,165 @@ import React, { useCallback, useRef } from 'react';
 import ollama from 'ollama/browser';
 import { IChatMessage, usePromptState } from "@/components/prompt/prompt_state";
 import { useStore } from "zustand";
+import { html } from "sinuous"
 
+type GetRefInput = () => HTMLInputElement | null;
+type GetRefHtmlElement = () => HTMLElement | null;
+type GetRefButtonElement = () => HTMLButtonElement | null;
+type StoreMessage = (message: IChatMessage) => void;
 
-const frenchOnly = ``
+const directive = `Respond in italian only, whatever le user language`;
 
-
-
-let firstResponse = true;
+// Add initial system message if first response
+let isFirstResponse = true;
 
 // Définition des styles
 const stylePrompt = {
-  marginRight: '3.5rem',
-  marginLeft: '3rem',
-  marginBottom: '1rem',
+    marginRight: '3.5rem',
+    marginLeft: '3rem',
+    marginBottom: '1rem',
 };
 
 const styleInput = {
-  width: '100%',
-  border: 'var(--border-color)',
-  height: '2rem',
-  borderRadius: '3px',
-  padding: '1rem',
+    width: '100%',
+    border: 'var(--border-color)',
+    height: '2rem',
+    borderRadius: '3px',
+    padding: '1rem',
 };
 
 const styleInputButton = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '5px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
 };
 
 // Initialisation de l'array messages 
-const messages: { role: string; content: any }[] = [];
+const messages: IChatMessage[] = [];
 
 // Titre du message
 function setTitleMessage(title: string): string {
-  return `<h1 style='background:rgba(0,0,0,0.08); padding:3px'>${title}</h1>`;
+    return `<h1 style='background:rgba(0,0,0,0.08); padding:3px'>${title}</h1>`;
 }
 
-// Envoi du prompt et la réception de la réponse
-async function sendPrompt(
-
-  getInputRef: () => HTMLInputElement | null,
-  getResponseRef: () => HTMLElement | null,
-  getButtonRef: () => HTMLButtonElement | null,
-  store_message : (message : IChatMessage) => void) {
-
-  const input = getInputRef();
-  if (!input) return;
-
-  const button = getButtonRef();
-
-  if (button) {
-    button.innerText = "..."
-    button.disabled = true;
-  }
 
 
-  const areaResponse = getResponseRef() as HTMLElement;
 
-  if (firstResponse) {
-    messages.push({
-      role: 'system',
-      content: frenchOnly
-    });
+function handleFirstResponse() {
+    if (isFirstResponse) {
+       
+        messages.push({
+            role: 'system',
+            content: directive,
+        });
 
-    let splash = document.getElementById("splash") as HTMLElement;
-    if (splash) {
-      splash.style.display = "none"
+        const splash = document.getElementById("splash") as HTMLElement;
+        if (splash) {
+            splash.style.display = "none";
+        }
+        isFirstResponse = false;
     }
+}
 
-    firstResponse = false
-  }
+function createMessageContainer(responseArea: any, input: HTMLInputElement) {
+    responseArea.innerHTML += setTitleMessage(input.value);
+    input.value = "";
+    const divResponse = html`<div style='margin-left:0rem; margin-bottom:1rem;font-weight:300'></div>`;
+    responseArea.appendChild(divResponse);
+    return divResponse as HTMLElement;
+}
 
-  messages.push({
-    role: 'user',
-    content: input.value,
-  });
-
-  store_message({
-    role: 'user',
-    content: input.value,
-  })
-
-  try {
-
-    const response = await ollama.chat({
-      model: 'llama3',
-      messages,
-      stream: true,
+function displayAndStoreMessage(role: string, content: string, storeMessage: (message: IChatMessage) => void) {
+    messages.push({
+        role: role,
+        content: content
     });
+    storeMessage({
+        role: role,
+        content: content,
+    });
+}
 
-  
-    areaResponse.innerHTML += setTitleMessage(input.value);
+async function sendMessages() {
+    const response = await ollama.chat({
+        model: 'llama3',
+        messages,
+        stream: true,
+    });
+    return response;
+}
 
-    input.value = ""
-
-    let d = document.createElement("div") as HTMLElement
-    d.style.marginLeft = '0rem';
-    d.style.marginBottom= '1rem';
-    d.style.fontWeight = '300';
-    areaResponse.appendChild(d);
+async function sendPrompt(
+    getInputRef: GetRefInput, getResponseRef: GetRefHtmlElement,
+    getButtonRef: GetRefButtonElement, storeMessage: StoreMessage
+) {
+    const input = getInputRef() as HTMLInputElement;
 
     let assistantMessage = "";
 
+    const [button, responseArea] = [getButtonRef(), getResponseRef()];
+    
+    button && (button.innerText = "...") && (button.disabled)
+
+    handleFirstResponse();
+
+    displayAndStoreMessage("user", input.value, storeMessage);
+
+    const messageContainer = createMessageContainer(responseArea, input);
+
+    const response = await sendMessages();
+
+    messageContainer.innerHTML = "Loading"
+
+    assistantMessage = await streamMessage(response, messageContainer);
+
+    displayAndStoreMessage('assistant', assistantMessage, storeMessage)
+
+    input.value = ""; input.focus();
+
+    button && (button.innerText = "Envoyer") && (button.disabled = false);
+}
+
+async function streamMessage(response:any, messageContainer: HTMLElement) {
+    messageContainer.innerHTML = "";
+    let assistantMessage = "";
     for await (const chunk of response) {
-      let chunked = chunk.message.content;
-      d.innerHTML += chunked;
-      assistantMessage += chunked;
+        const chunked = chunk.message.content;
+        messageContainer.innerHTML += chunked;
+        assistantMessage += chunked;
     }
-
-    messages.push({
-      role: 'assistant',
-      content: assistantMessage,
-    });
-
-    store_message({
-      role: 'assistant',
-      content: assistantMessage,
-    })
-
-    input.value = "";
-    input.focus();
-
-    if (button) {
-      button.innerText = "Envoyer"
-      button.disabled = false;
-    }
-
-  } catch (error) {
-    console.error('Échec de l\'envoi du prompt:', error);
-  }
+    return assistantMessage;
 }
 
 // Composant Prompt
 function Prompt({ getResponseRef }: { getResponseRef: () => HTMLElement | null }) {
 
-  const inputRef = useRef(null);
-  const buttonRef = useRef(null);
+    const inputRef = useRef(null);
+    const buttonRef = useRef(null);
 
-  const getInputRef = useCallback(() => inputRef.current, []);
-  const getButtonRef = useCallback(() => buttonRef.current, []);
+    const getInputRef = () => inputRef.current;
+    const getButtonRef = () => buttonRef.current;
 
-  const {store_message} = useStore(usePromptState, (state) => state);
+    const { store_message } = useStore(usePromptState, (state) => state);
+ 
 
-  return (
-    <div className="centered-content" style={stylePrompt}>
-      <div style={styleInputButton}>
-        <input ref={inputRef} style={styleInput} />
-        <button ref={buttonRef} onClick={() => {
-          sendPrompt(
-            getInputRef,
-            getResponseRef,
-            getButtonRef,
-            store_message
-          );
-        }}>
-          Envoyer
-        </button>
-      </div>
-    </div>
-  );
+    return (
+        <div className="centered-content" style={stylePrompt}>
+            <div style={styleInputButton}>
+                <input ref={inputRef} style={styleInput} />
+                <button ref={buttonRef} onClick={() => {
+                    sendPrompt(
+                        getInputRef,
+                        getResponseRef,
+                        getButtonRef,
+                        store_message
+                    );
+                }}>
+                    Envoyer
+                </button>
+            </div>
+        </div>
+    );
 }
 
 export default Prompt;

@@ -14,7 +14,7 @@ interface IPrompt {
 
 export const usePromptState = create(
     persist<IPrompt>(
-        (set) => (
+        (set, get) => (
             {
                 stored_messages: [],
                 store_message: (message : IChatMessage) => {
@@ -23,6 +23,11 @@ export const usePromptState = create(
                 clear_messages: () => { 
                     set(() => ({stored_messages : []}))
                 },
+                redim_stored_messages : () => {
+                    alert("Max Mess")
+                },
+               
+                
             }
         ),
         {
