@@ -1,12 +1,8 @@
 "use client"
-
 import Prompt from "@/components/prompt/prompt";
 import { IChatMessage, usePromptState } from "@/components/prompt/prompt_state";
-import { useStore } from "zustand";
 import { useRef } from "react";
-
-
-let initPage = true
+import NoSsr from "@/components/NoSsr"
 
 const styleContent = {
     marginRight: '3rem',
@@ -26,32 +22,35 @@ const styleMain = {
     lineHeight: '1.45rem',
 }
 
-function displayStoredMessages (messages : IChatMessage[]) {
+function DisplayStoredMessages({ messages }: { messages: IChatMessage[] }) {
     return (
-        messages.map((m : IChatMessage, index: number ) => (
-            <div key={index} style={{fontWeight : m.role == "user" ? "bold " : "normal" }}>
-                {m.content}
+
+        messages.map((m: IChatMessage, index: number) => (
+            <div key={index} style={{ fontWeight: m.role == "user" ? "bold " : "normal" }}>
+                <div>{m.content}</div>
             </div>
         ))
     )
 }
 
-function getStoredMessages () {
+function getStoredMessages() {
     return usePromptState.getState().stored_messages;
 }
 
 function Chat() {
     const responseRef = useRef(null);
-    const getResponseRef = () => responseRef.current;
+
     return (
-        <div className="main-content">
-            <div style={styleContent as React.CSSProperties}>
-                <div style={styleMain} ref={responseRef}>
-                   {displayStoredMessages(getStoredMessages())}
+        <NoSsr>
+            <div className="main-content">
+                <div style={styleContent as React.CSSProperties}>
+                    <div style={styleMain} ref={responseRef}>
+                        <DisplayStoredMessages messages={getStoredMessages()} />
+                    </div>
                 </div>
+                <Prompt getResponseRef={() => responseRef.current} />
             </div>
-            <Prompt getResponseRef={getResponseRef} />
-        </div>
+        </NoSsr>
     )
 }
 
