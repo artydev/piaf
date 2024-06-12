@@ -1,6 +1,9 @@
-// Importation nécessaire des hooks et composants
+
 import React, { useCallback, useRef } from 'react';
 import ollama from 'ollama/browser';
+import { IChatMessage, usePromptState } from "@/components/prompt/prompt_state";
+import { useStore } from "zustand";
+
 
 const frenchOnly = ``
 
@@ -42,12 +45,12 @@ async function sendPrompt(
 
   getInputRef: () => HTMLInputElement | null,
   getResponseRef: () => HTMLElement | null,
-  getButtonRef: () => HTMLButtonElement | null) {
+  getButtonRef: () => HTMLButtonElement | null,
+  store_message : (message : IChatMessage) => void) {
 
   const input = getInputRef();
   if (!input) return;
 
-  
   const button = getButtonRef();
 
   if (button) {
@@ -55,8 +58,8 @@ async function sendPrompt(
     button.disabled = true;
   }
 
-  const areaResponse = getResponseRef() as HTMLElement;
 
+  const areaResponse = getResponseRef() as HTMLElement;
 
   if (firstResponse) {
     messages.push({
@@ -77,6 +80,11 @@ async function sendPrompt(
     content: input.value,
   });
 
+  store_message({
+    role: 'user',
+    content: input.value,
+  })
+
   try {
 
     const response = await ollama.chat({
@@ -85,7 +93,7 @@ async function sendPrompt(
       stream: true,
     });
 
-    
+  
     areaResponse.innerHTML += setTitleMessage(input.value);
 
     input.value = ""
@@ -109,6 +117,11 @@ async function sendPrompt(
       content: assistantMessage,
     });
 
+    store_message({
+      role: 'assistant',
+      content: assistantMessage,
+    })
+
     input.value = "";
     input.focus();
 
@@ -131,6 +144,8 @@ function Prompt({ getResponseRef }: { getResponseRef: () => HTMLElement | null }
   const getInputRef = useCallback(() => inputRef.current, []);
   const getButtonRef = useCallback(() => buttonRef.current, []);
 
+  const {store_message} = useStore(usePromptState, (state) => state);
+
   return (
     <div className="centered-content" style={stylePrompt}>
       <div style={styleInputButton}>
@@ -139,7 +154,8 @@ function Prompt({ getResponseRef }: { getResponseRef: () => HTMLElement | null }
           sendPrompt(
             getInputRef,
             getResponseRef,
-            getButtonRef
+            getButtonRef,
+            store_message
           );
         }}>
           Envoyer

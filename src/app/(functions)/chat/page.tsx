@@ -3,6 +3,7 @@
 import Prompt from "@/components/prompt/prompt";
 import { useRef } from "react";
 
+
 let initPage = true
 
 const styleContent = {

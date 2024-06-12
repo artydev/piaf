@@ -23,16 +23,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div id="container">
-        
+
           <Navbar />
           <div className="content">
             <Sidebar />
             <div className="main">
-              
-               
-                  {children}
-               
-              
+              {children}
             </div>
           </div>
           <Footer />
