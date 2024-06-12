@@ -24,10 +24,8 @@ export const usePromptState = create(
                     set(() => ({stored_messages : []}))
                 },
                 redim_stored_messages : () => {
-                    alert("Max Mess")
-                },
-               
-                
+                    // Limit array size
+                }
             }
         ),
         {

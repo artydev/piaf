@@ -1,8 +1,9 @@
 "use client"
+
 import Prompt from "@/components/prompt/prompt";
-import { IChatMessage, usePromptState } from "@/components/prompt/prompt_state";
+import { IChatMessage } from "@/components/prompt/prompt_state";
+import getStoredMessages from "@/services/svc_messages";
 import { useRef } from "react";
-import NoSsr from "@/components/NoSsr"
 
 const styleContent = {
     marginRight: '3rem',
@@ -32,24 +33,17 @@ function DisplayStoredMessages({ messages }: { messages: IChatMessage[] }) {
     )
 }
 
-function getStoredMessages() {
-    return usePromptState.getState().stored_messages;
-}
-
 function Chat() {
     const responseRef = useRef(null);
-
     return (
-      
-            <div className="main-content">
-                <div style={styleContent as React.CSSProperties}>
-                    <div style={styleMain} ref={responseRef}>
-                        <DisplayStoredMessages messages={getStoredMessages()} />
-                    </div>
+        <div className="main-content">
+            <div style={styleContent as React.CSSProperties}>
+                <div style={styleMain} ref={responseRef}>
+                    <DisplayStoredMessages messages={getStoredMessages()} />
                 </div>
-                <Prompt getResponseRef={() => responseRef.current} />
             </div>
-      
+            <Prompt getAreaResponsesRef={() => responseRef.current} />
+        </div>
     )
 }
 

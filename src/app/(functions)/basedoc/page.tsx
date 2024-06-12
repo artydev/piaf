@@ -13,7 +13,6 @@ export default function BaseDoc() {
         <div style={styles}>
             <div>
                <DragAndDrop />
-               
             </div>
         </div>
     )
