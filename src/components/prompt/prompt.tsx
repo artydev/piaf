@@ -29,7 +29,7 @@ let isFirstResponse = true;
 // Styles appliqués au prompt
 const stylePrompt = {
     marginRight: '3.5rem',
-    marginLeft: '3rem',
+    marginLeft: '2rem',
     marginBottom: '1rem',
 };
 
@@ -40,6 +40,7 @@ const styleInput = {
     height: '2rem',
     borderRadius: '3px',
     padding: '1rem',
+    fontSize: '0.90rem',
 };
 
 // Styles appliqués au bouton d'envoi
@@ -50,14 +51,14 @@ const styleInputButton = {
 };
 
 // Styles appliqués au conteneur des réponses
-const styleResponseContainer = 'margin-left:0rem; margin-bottom:1rem;font-weight:300';
+const styleResponseContainer = 'margin-left:0rem; margin-bottom:1rem; margin-right:4rem;font-weight:300';
 
 // Tableau pour stocker les messages échangés
 let messages: IChatMessage[] = [];
 
 // Fonction pour ajouter un titre au message
 function setTitleMessage(title: string): string {
-    return `<h1 style='background:rgba(0,0,0,0.08); padding:3px'>${title}</h1>`;
+    return `<h1 style='font-weight:500'>${title}</h1>`;
 }
 
 // Fonction pour gérer la première réponse de l'assistant
@@ -137,7 +138,7 @@ async function sendPrompt(
 
     input.value = ""; input.focus();
 
-    button && (button.innerText = "Envoyer") && (button.disabled = false);
+    button && (button.innerText =  ">>" ) && (button.disabled = false);
 }
 
 // Fonction asynchrone pour traiter la réponse en streaming
@@ -176,7 +177,7 @@ function Prompt({ getAreaResponsesRef }: { getAreaResponsesRef: () => HTMLElemen
                         store_message
                     );
                 }}>
-                    Envoyer
+                    { ">>" }
                 </button>
             </div>
         </div>

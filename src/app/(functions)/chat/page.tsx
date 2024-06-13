@@ -6,27 +6,39 @@ import getStoredMessages from "@/services/svc_messages";
 import { useRef } from "react";
 
 const styleContent = {
-    marginRight: '3rem',
-    marginLeft: '3rem',
+    fontSize: '0.90rem',
+    fontWeight: 300,
     marginTop: '0.5rem',
-    marginBottom: '0.8rem',
-    height: '68.5vh',
+    marginRight: '1rem',
+    height: '75vh',
     overflow: 'auto',
-    padding: '1rem',
-    background: 'rgba(0,0,0,0.0)',
+    background: 'hsl(250, 100%, 98.5%)',
+    padding:'3rem',
     display: 'flex',
     flexDirection: 'column-reverse',
-    scrollBehavior: "smooth"
+    scrollBehavior: "smooth",
+   
 }
 
-const styleMain = {
+const styleMessages = {
     lineHeight: '1.45rem',
+    marginRight: '1rem',
+}
+
+const styleUser = {
+    fontWeight: '500',
+   
+}
+
+const styleAssistant = {
+    marginBottom: '1rem',
+    
 }
 
 function DisplayStoredMessages({ messages }: { messages: IChatMessage[] }) {
     return (
         messages.map((m: IChatMessage, index: number) => (
-            <div key={index} style={{ fontWeight: m.role == "user" ? "bold " : "normal" }}>
+            <div key={index} style={m.role == "user" ? styleUser : styleAssistant}>
                 <div>{m.content}</div>
             </div>
         ))
@@ -38,7 +50,7 @@ function Chat() {
     return (
         <div className="main-content">
             <div style={styleContent as React.CSSProperties}>
-                <div style={styleMain} ref={responseRef}>
+                <div style={styleMessages} ref={responseRef}>
                     <DisplayStoredMessages messages={getStoredMessages()} />
                 </div>
             </div>
