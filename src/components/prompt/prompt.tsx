@@ -26,12 +26,6 @@ Si tu ne sais pas, n'invente pas de réponses, dis simplement que tu ne sais pas
 // Variable pour contrôler si c'est la première réponse de l'assistant
 let isFirstResponse = true;
 
-// Styles appliqués au prompt
-const stylePrompt = {
-    marginRight: '3.5rem',
-    marginLeft: '2rem',
-    marginBottom: '1rem',
-};
 
 // Styles appliqués à l'élément d'entrée
 const styleInput = {
@@ -51,14 +45,14 @@ const styleInputButton = {
 };
 
 // Styles appliqués au conteneur des réponses
-const styleResponseContainer = 'margin-left:0rem; margin-bottom:1rem; margin-right:4rem;font-weight:300';
+const styleResponseContainer = 'margin-bottom:1rem;font-weight:300';
 
 // Tableau pour stocker les messages échangés
 let messages: IChatMessage[] = [];
 
 // Fonction pour ajouter un titre au message
 function setTitleMessage(title: string): string {
-    return `<h1 style='font-weight:500'>${title}</h1>`;
+    return `<h1 style='font-weight:600'>${title}</h1>`;
 }
 
 // Fonction pour gérer la première réponse de l'assistant
@@ -113,12 +107,13 @@ async function sendMessages() {
 
 // Fonction asynchrone principale pour envoyer une demande et recevoir une réponse
 async function sendPrompt(
+    
     getInputRef: GetRefInput, getAreaResponsesRef: GetRefHtmlElement,
-    getButtonRef: GetRefButtonElement, storeMessage: StoreMessage
-) {
-    const input = getInputRef() as HTMLInputElement;
-
+    getButtonRef: GetRefButtonElement, storeMessage: StoreMessage) {
+        
+ 
     const [button, responseArea] = [getButtonRef(), getAreaResponsesRef()];
+    const input = getInputRef() as HTMLInputElement;
 
     button && (button.innerText = "...") && (button.disabled);
 
@@ -155,6 +150,14 @@ async function streamMessage(response: any, messageContainer: HTMLElement) {
 
 // Composant principal qui rend le formulaire de chat
 function Prompt({ getAreaResponsesRef }: { getAreaResponsesRef: () => HTMLElement | null }) {
+
+    const stylePrompt:React.CSSProperties = {
+        marginRight: '3.5rem',
+        marginLeft: '2rem',
+        marginBottom: '1rem',
+        position: 'relative',
+        top: '2rem'
+    };
 
     const inputRef = useRef(null);
     const buttonRef = useRef(null);

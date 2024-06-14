@@ -6,27 +6,27 @@ import getStoredMessages from "@/services/svc_messages";
 import { useRef } from "react";
 
 const styleContent = {
-    fontSize: '0.90rem',
-    fontWeight: 300,
+    fontFamily: 'Segoe UI',
+    fontSize: '1rem',
+    fontWeight: '300',
     marginTop: '0.5rem',
     marginRight: '1rem',
-    height: '75vh',
+    height: '65vh',
     overflow: 'auto',
-    background: 'hsl(250, 100%, 98.5%)',
-    padding:'3rem',
+    paddingRight:'0rem',
+    paddingLeft:'0rem',
     display: 'flex',
     flexDirection: 'column-reverse',
     scrollBehavior: "smooth",
-   
 }
 
 const styleMessages = {
-    lineHeight: '1.45rem',
-    marginRight: '1rem',
+    lineHeight: '1.5rem',
+    marginRight: '2.5rem',
 }
 
 const styleUser = {
-    fontWeight: '500',
+    fontWeight: '600',
    
 }
 
@@ -36,6 +36,7 @@ const styleAssistant = {
 }
 
 function DisplayStoredMessages({ messages }: { messages: IChatMessage[] }) {
+    console.log("Fetching messages from localStorage")
     return (
         messages.map((m: IChatMessage, index: number) => (
             <div key={index} style={m.role == "user" ? styleUser : styleAssistant}>
@@ -54,9 +55,13 @@ function Chat() {
                     <DisplayStoredMessages messages={getStoredMessages()} />
                 </div>
             </div>
-            <Prompt getAreaResponsesRef={() => responseRef.current} />
+            <div style={{marginRight: '2.5rem'}}>
+                <Prompt getAreaResponsesRef={() => responseRef.current} />
+            </div>
+            
         </div>
+        
     )
 }
-
+console.clear();
 export default Chat;

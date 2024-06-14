@@ -1,7 +1,7 @@
 import './sidebar.module.css'
 import Link from "next/link";
 import { BsChatRightDots, BsDatabase } from "react-icons/bs";
-import { BsCardText } from "react-icons/bs";
+
 
 const linkStyle = {
 	textDecoration: 'none',
